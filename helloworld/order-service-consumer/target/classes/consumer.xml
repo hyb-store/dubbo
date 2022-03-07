@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://dubbo.apache.org/schema/dubbo
+       http://dubbo.apache.org/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--为了让注解生效，需要包扫描-->
+    <context:component-scan base-package="com.hyb.gmall.service.impl"></context:component-scan>
+
+    <dubbo:application name="order-service-consumer"></dubbo:application>
+
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"></dubbo:registry>
+
+    <!--声明需要调用的远程服务的接口;生成远程服务代理-->
+    <!--timeout="0" 超时-->
+    <!--retries重试次数，不包含第一次调用，0代表不重试-->
+    <!--幂等(设置重试次数) [查询、删除、修改]、非幂等(不能设置重试次数)[新增]-->
+    <dubbo:reference interface="com.hyb.gmall.service.UserService"
+                     id="userService" timeout="5000" retries="3" version="0.0.1"></dubbo:reference>
+   <!-- <dubbo:reference interface="com.hyb.gmall.service.UserService"
+                     id="userService" check="false" timeout="3000"
+                    retries="3" stub="com.hyb.gmall.service.impl.UserServiceStub"></dubbo:reference>-->
+
+    <!--配置当前消费者的统一规则  所有的服务都不检查-->
+    <dubbo:consumer check="false"></dubbo:consumer>
+
+    <dubbo:monitor protocol="registry"></dubbo:monitor>
+    <!-- <dubbo:monitor address="127.0.0.1:7070"></dubbo:monitor> -->
+</beans>
